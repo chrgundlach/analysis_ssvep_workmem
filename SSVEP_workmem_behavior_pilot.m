@@ -4,7 +4,8 @@ clearvars
 p.path =                'N:\AllgPsy\experimental_data\2025_SSVEP_workmem\behavior\';
 p.path =                '\\smbone.dom.uni-leipzig.de\FFL\AllgPsy\experimental_data\2025_SSVEP_workmem\behavior\';
 
-p.files =               {'Pilot_CG_VP90_timing.mat';'Pilot_Chris_VP92_timing.mat';'Pilot_Sabrina_VP96_timing.mat'};
+p.files =               {'Pilot_CG_VP90_timing.mat';'Pilot_Chris_VP92_timing.mat';'Pilot_Sabrina_VP96_timing.mat';
+                            'Pilot_Katha_VP94_timing.mat';'Pilot_Christian_VP97_timing.mat'};
 
 p.responsewin_main =    [0.2 1.5];
 p.responsewin_pre =     [0.2 1]; % according to p.targ_respwin from run_posnalpha
@@ -24,6 +25,7 @@ p.collabel =            {'orange';'blue'};
 
 %% actual calculation
 for i_sub = 1:numel(p.files)
+    i_sub
     % load data
     data_in.resp.experiment = repmat({[nan]},1,8);
     data_in.button_presses.experiment = repmat({[nan]},1,8);
