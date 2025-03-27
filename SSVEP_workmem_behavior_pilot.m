@@ -5,7 +5,7 @@ p.path =                'N:\AllgPsy\experimental_data\2025_SSVEP_workmem\behavio
 p.path =                '\\smbone.dom.uni-leipzig.de\FFL\AllgPsy\experimental_data\2025_SSVEP_workmem\behavior\';
 
 p.files =               {'Pilot_CG_VP90_timing.mat';'Pilot_Chris_VP92_timing.mat';'Pilot_Sabrina_VP96_timing.mat';
-                            'Pilot_Katha_VP94_timing.mat';'Pilot_Christian_VP97_timing.mat';'VP01_timing.mat';'VP02_timing.mat'};
+                            'Pilot_Katha_VP94_timing.mat';'Pilot_Christian_VP97_timing.mat';'VP01_timing.mat';'VP02_timing.mat';'VP01_timing.mat'};
 
 p.responsewin_main =    [0.2 1.5];
 p.responsewin_pre =     [0.2 1]; % according to p.targ_respwin from run_posnalpha
