@@ -12,13 +12,13 @@ p.bdf_path=         [p.path 'eeg\raw\'];
 p.set_path=         [p.path 'eeg\set\'];
 p.epoch_path=       [p.path 'eeg\epoch_erp\'];
 p.scads_path=       [p.path 'eeg\SCADS_erp\'];
-p.chanlocs_path=    ['C:\Users\psy05cvd\Dropbox\work\matlab\Auswertungsskripte\Analyzer_G\ChanLocs\BioSemi64_1020.epf'];
-% p.chanlocs_path=    ['C:\Users\EEG\Documents\MATLAB\lab_library\BS_Chanlocs\BioSemi64_1020.epf'];
+% p.chanlocs_path=    ['C:\Users\psy05cvd\Dropbox\work\matlab\Auswertungsskripte\Analyzer_G\ChanLocs\BioSemi64_1020.epf'];
+p.chanlocs_path=    ['C:\Users\EEG\Documents\MATLAB\lab_library\BS_Chanlocs\BioSemi64_1020.epf'];
 p.mean_path=        [p.path 'eeg\mean\'];
 p.subs=             cellfun(@(x) sprintf('%02.0f',x),num2cell(1:60),'UniformOutput', false)';
 % p.subs2use=         [1 3:6 7 9 10 11 12];%  % participant 2,8 measurement cancelled due to bad behavior
 % p.subs2use=         [1:13 15:24];%
-p.subs2use=         [1 2];%
+p.subs2use=         [3];%
 p.part=             {'_1';'_2';'_3'};
 p.events=           {[11 ]; ... % [RDK1 RDK3; RDK4 RDK6] 'cue_left_3t3d'
                     [21 ]; ... % [RDK1 RDK3; RDK4 RDK6] 'cue_right_3t3d'
@@ -162,7 +162,12 @@ for i_sub=1:numel(p.subs2use)
         PreProc.trial_SCADS(t.index(Trials2Del))=false;        
         
         % save trials marked as artifacts for potential later inspection
-        EEG_SCADS = pop_select(EEG, 'trial', Trials2Del);
+        if ~isempty(Trials2Del)
+            EEG_SCADS = pop_select(EEG, 'trial', Trials2Del);
+        else
+            EEG_SCADS = pop_select(EEG, 'trial', 1);
+        end
+
         % discard trials indexed as containing artifacts
         EEG = pop_rejepoch(EEG, EEG.reject.rejmanual, 0);
         % rereference to average reference

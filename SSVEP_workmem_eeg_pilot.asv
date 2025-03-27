@@ -136,8 +136,8 @@ pl.elec2plot = {'O1';'Oz';'O2';'I1';'Iz';'I2'};
 
 pl.elec2plot = {'P7';'PO7';'Iz';'I2'};         % right stims two cluster
 % pl.elec2plot = {'O2';'PO8';'PO4';'I2'};         % left one cluster
-pl.elec2plot = {'PO4';'PO8';'O2'};         % left stims one cluster !
-% pl.elec2plot = {'P7';'PO7'};         % right stims two cluster
+% pl.elec2plot = {'PO4';'PO8';'O2'};         % left stims one cluster !
+pl.elec2plot = {'P7';'PO7'};         % right stims two cluster
 pl.elec2plot = {'P7';'PO7';'P9';'O1';'I1';'Iz'};         % right stims two cluster  
 
 pl.elec2plot_i=logical(sum(cell2mat(cellfun(@(x) strcmpi({EEG_cue.chanlocs.labels},x), pl.elec2plot, 'UniformOutput',false)),1));
@@ -162,8 +162,8 @@ plot(FFT_freqs,mean(pl.data,2),'Color','k','LineWidth',2)
 xlim([0 50])
 xlabel('frequency in Hz')
 ylabel('amplitude in \muV')
-title(sprintf('Grand Mean evoked spectrum | t = [%1.0f %1.0f]ms | N = %1.0f', ...
-    minmax([p.cue_win2an{pl.time2plot}]*1000), numel(pl.sub2plot)),'Interpreter','none')
+title(sprintf('evoked spectrum | N = %1.0f', ...
+    numel(pl.sub2plot)),'Interpreter','none')
 vline(pl.freq2plot([1, 2, 4, 5]),'k:',{'left','left','right','right'})
 % draw topography with electrode positions
 h.a1 = axes('position',[0.68 0.68 0.25 0.25],'Visible','off');
@@ -172,7 +172,7 @@ topoplot(find(pl.elec2plot_i),EEG_cue.chanlocs,'style','blank','electrodes', 'on
 
 %% do some plotting | topographies
 pl.freqs = [RDK_all{1}.freq];
-pl.freq2plot = 5;
+pl.freq2plot = 1;
 pl.freqpos = {'left';'left';'left';'right';'right';'right'};
 
 pl.sub2plot = 1:numel(p.files2use);
@@ -190,7 +190,7 @@ pl.data = squeeze(mean(squeeze(FFT_data_evo(pl.fidx(1):pl.fidx(2),:,pl.con2plot,
 pl.mdata = mean(pl.data,3,'omitnan');
 
 figure;
-set(gcf,'Position',[100 100 300 300],'PaperPositionMode','auto')
+set(gcf,'Position',[100 100 400 400],'PaperPositionMode','auto')
 
 pl.clim = [0 max(pl.mdata)];
 topoplot(pl.mdata, EEG_cue.chanlocs, ...
@@ -207,15 +207,14 @@ colorbar
 pl.time2plot = [200 1000];
 pl.time2plot = [500 1000];
 pl.time2plot = [1000 1500];
-pl.time2plot = [-1000 0];
+% pl.time2plot = [-500 0];
 pl.tidx = dsearchn(ERP_times', pl.time2plot');
 
 pl.sub2plot = 1:numel(p.files2use);
 % pl.sub2plot = 1:2;
 
 
-pl.contrast = p.con3idx([3,1,2]);
-pl.contrast_label = p.con3label([3,1,2]);
+pl.contrast = p.con3idx;
 
 pl.data = nan([size(ERP_data,1),numel(pl.tidx(1):pl.tidx(2)), size(pl.contrast,1) numel(pl.sub2plot)]);
 
@@ -228,7 +227,7 @@ end
 pl.mdata = squeeze(mean(pl.data,[2,4]));
 
 figure;
-set(gcf,'Position',[100 100 700 180],'PaperPositionMode','auto')
+set(gcf,'Position',[100 100 1100 300],'PaperPositionMode','auto')
 for i_contr = 1:size(pl.mdata,2)
     h.s(i_con) = subplot(1,size(pl.mdata,2),i_contr);
     pl.clim = [-1 1] *max(abs(pl.mdata),[],'all');
@@ -236,7 +235,7 @@ for i_contr = 1:size(pl.mdata,2)
         'shading', 'interp', 'numcontour', 0, 'maplimits',pl.clim,'conv','off','colormap',flipud(cbrewer2('RdBu')),...
         'whitebk','on');
     title(sprintf('CDA | %s\n[%1.0f %1.0f]ms', ...
-        pl.contrast_label{i_contr}, pl.time2plot), ...
+        p.con3label{i_contr}, pl.time2plot), ...
          "Interpreter","none")
     colorbar
 end
@@ -402,7 +401,7 @@ end
 
 
 figure;
-set(gcf,'Position',[100 100 900 300],'PaperPositionMode','auto')
+set(gcf,'Position',[100 100 900 500],'PaperPositionMode','auto')
 plot(ERP_times,mean(pl.data,3))
 xlabel('time in ms')
 ylabel('amplitude in \muV/cm²')
@@ -415,7 +414,7 @@ topoplot(find(pl.elec2plot_i{1}),EEG_cue.chanlocs,'style','blank','electrodes', 
 
 
 figure;
-set(gcf,'Position',[100 100 900 300],'PaperPositionMode','auto')
+set(gcf,'Position',[100 100 900 500],'PaperPositionMode','auto')
 plot(ERP_times,mean(pl.data2,3))
 xlabel('time in ms')
 ylabel('amplitude in \muV/cm²')

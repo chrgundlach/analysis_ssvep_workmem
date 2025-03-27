@@ -14,14 +14,14 @@ p.bdf_path=         [p.path 'eeg\raw\'];
 p.set_path=         [p.path 'eeg\set\'];
 p.epoch_path=       [p.path 'eeg\epoch\'];
 p.scads_path=       [p.path 'eeg\SCADS\'];
-p.chanlocs_path=    'C:\Users\psy05cvd\Dropbox\work\matlab\Auswertungsskripte\Analyzer_G\ChanLocs\BioSemi64_1020.epf';
-% p.chanlocs_path=    'C:\Users\EEG\Documents\MATLAB\lab_library\BS_Chanlocs\BioSemi64_1020.epf';
+% p.chanlocs_path=    'C:\Users\psy05cvd\Dropbox\work\matlab\Auswertungsskripte\Analyzer_G\ChanLocs\BioSemi64_1020.epf';
+p.chanlocs_path=    'C:\Users\EEG\Documents\MATLAB\lab_library\BS_Chanlocs\BioSemi64_1020.epf';
 p.mean_path=        [p.path 'EEG\mean\'];
 p.exp_name=         'SSVEP_workmem';
 p.subs=             arrayfun(@(x) sprintf('%02.0f',x),1:60,'UniformOutput',false)';
 % from 4 onwards: same design
 % p.subs2use=         [6:13 16:18];%
-p.subs2use=         [1 2];%
+p.subs2use=         [3];%
 p.part=             {'_1';'_2';'_3'};
 p.events =          {[10 ]; ... % [RDK1 RDK3; RDK4 RDK6] 'cue_left_3t3d'
                     [20 ]; ... % [RDK1 RDK3; RDK4 RDK6] 'cue_right_3t3d'
