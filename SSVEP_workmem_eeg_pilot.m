@@ -138,7 +138,7 @@ pl.elec2plot = {'P7';'PO7';'Iz';'I2'};         % right stims two cluster
 % pl.elec2plot = {'O2';'PO8';'PO4';'I2'};         % left one cluster
 pl.elec2plot = {'PO4';'PO8';'O2'};         % left stims one cluster !
 % pl.elec2plot = {'P7';'PO7'};         % right stims two cluster
-pl.elec2plot = {'P7';'PO7';'P9';'O1';'I1';'Iz'};         % right stims two cluster  
+% pl.elec2plot = {'P7';'PO7';'P9';'O1';'I1';'Iz'};         % right stims two cluster  !
 
 pl.elec2plot_i=logical(sum(cell2mat(cellfun(@(x) strcmpi({EEG_cue.chanlocs.labels},x), pl.elec2plot, 'UniformOutput',false)),1));
 
@@ -415,16 +415,171 @@ topoplot(find(pl.elec2plot_i{1}),EEG_cue.chanlocs,'style','blank','electrodes', 
 
 
 figure;
-set(gcf,'Position',[100 100 900 300],'PaperPositionMode','auto')
+set(gcf,'Position',[100 100 500 200],'PaperPositionMode','auto')
 plot(ERP_times,mean(pl.data2,3))
+hold on; plot(ERP_times,mean(pl.data2,[2 3]),'Color',[0.2 0.2 0.2])
 xlabel('time in ms')
 ylabel('amplitude in \muV/cm²')
 title("filtered ERP | contra - ipsi averaged across sides")
-legend(p.con3label,"Interpreter","none","Location","Eastoutside")
+legend([p.con3label; {'mean'}],"Interpreter","none","Location","SouthEastoutside")
 grid on
-h.a1 = axes('position',[0.74 0.68 0.25 0.25],'Visible','off');
+h.a1 = axes('position',[0.65 0.53 0.41 0.41],'Visible','off');
 topoplot(find(pl.elec2plot_i{1}),EEG_cue.chanlocs,'style','blank','electrodes', 'on','whitebk','on',...
     'emarker2',{find(pl.elec2plot_i{1}|pl.elec2plot_i{2}),'o','r',4,1});
 
 
 
+%% extract some data | ERP | contra and ipsi
+pl.time2plot = [-100 1000];
+pl.tidx = dsearchn(ERP_times', pl.time2plot');
+
+pl.sub2plot = 1:numel(p.files2use);
+
+pl.elec2plot = {{'P9';'P7';'PO7'}; {'P8';'P10';'PO8'}};
+% pl.elec2plot = {{'P7'}; {'P8'}};
+% pl.elec2plot = {{'PO3';'O1';'I1'}; {'PO4';'O2';'I2'}};
+pl.elec2plot = {{'CP3';'CP5';'P3';'P5';'P7';'P9';'PO3';'PO7';'O1';'I1'}; {'CP4';'CP6';'P4';'P6';'P8';'P10';'PO4';'PO8';'O2';'I2'}};
+% pl.elec2plot = {{'PO3';'O1';'PO7';'I1'};{'PO4';'O2';'PO8';'I2'}};
+
+pl.elec2plot_i=cellfun(@(y) ...
+    logical(sum(cell2mat(cellfun(@(x) strcmpi({EEG_cue.chanlocs.labels},x), y, 'UniformOutput',false)),1)),...
+    pl.elec2plot(:,1), 'UniformOutput', false);
+
+% index contralateral electrode cluster
+pl.ContraIpsi_idx = [2 1; 1 2; 2 1; 1 2; 2 1; 1 2];
+% pl.ContraIpsi_idx = [2 1; 2 1; 2 1; 2 1; 2 1; 2 1];
+pl.contraIpsi_label = {'contra';'ipsi'};
+
+pl.time2plot = [{[-1000 0]} {'tracking'};{[500 1000]} {'retention'};{[1000 1500]} {'probe'}];
+
+% data: cluster x condition x time x participants
+pl.data = nan(size(pl.elec2plot,1),size(ERP_data,3), size(pl.time2plot,1), numel(pl.sub2plot));
+
+plout = [];
+for i_elec = 1:size(pl.elec2plot,1)
+    % index electrode cluster
+    plout.elecs{i_elec} = vararg2str(pl.elec2plot{i_elec});
+    for i_con =1:size(ERP_data,3)
+        % index contra or ipsi
+        plout.elec_label{i_elec,i_con} = pl.contraIpsi_label{pl.ContraIpsi_idx(i_con,i_elec)};
+        % index conditions
+        plout.con_idx(i_elec,i_con) = i_con;
+        plout.con_label1{i_elec,i_con} = p.con1label{i_con};
+        plout.con_label2{i_elec,i_con} = p.con2label{cell2mat(cellfun(@(x) any(ismember(x,i_con)), p.con2idx, 'UniformOutput', false))};
+        plout.con_label3{i_elec,i_con} = p.con3label{cell2mat(cellfun(@(x) any(ismember(x,i_con)), p.con3idx, 'UniformOutput', false))};
+        for i_time = 1:size(pl.time2plot,1)
+            % index time windows
+            pl.timeidx = dsearchn(ERP_times',pl.time2plot{i_time,1}');
+            % write out time information
+            plout.time{i_elec,i_con,i_time} = sprintf('[%1.0f %1.0f]ms',(pl.time2plot{i_time,1}));
+            plout.time_label(i_elec,i_con, i_time) = pl.time2plot(i_time,2);
+            % extract data
+            pl.data(i_elec,i_con,i_time,:) = squeeze(mean( ...
+                ERP_data(pl.elec2plot_i{i_elec},pl.timeidx(1):pl.timeidx(2),i_con,pl.sub2plot), ...
+                [1,2]));
+            % index participant
+            plout.participant(i_elec,i_con, i_time,:) = p.files(p.files2use(pl.sub2plot));
+        end
+    end
+end
+
+% expand data
+plout.elecs = repmat(plout.elecs', [1 size(pl.data,2:4)]);
+plout.elec_label = repmat(plout.elec_label, [1 1 size(pl.data,3:4)]);
+plout.con_idx = repmat(plout.con_idx, [1 1 size(pl.data,3:4)]);
+plout.con_label1 = repmat(plout.con_label1, [1 1 size(pl.data,3:4)]);
+plout.con_label2 = repmat(plout.con_label2, [1 1 size(pl.data,3:4)]);
+plout.con_label3 = repmat(plout.con_label3, [1 1 size(pl.data,3:4)]);
+plout.time = repmat(plout.time, [1 1 1 size(pl.data,4)]);
+plout.time_label = repmat(plout.time_label, [1 1 size(pl.data,4)]);
+
+plout.all_table = table(plout.participant(:), plout.elecs(:), plout.elec_label(:), plout.con_idx(:), ...
+    plout.con_label1(:), plout.con_label2(:), plout.con_label3(:), plout.time(:), plout.time_label(:), pl.data(:), ...
+    'VariableNames',{'participants','elecs','elec_label','con_idx','con_label1','con_label2','con_label3', ...
+    'time','time_label','amplitude'});
+
+
+t.path = 'C:\Users\psy05cvd\Dropbox\work\R-statistics\experiments\ssvep_workmem\data_in';
+t.datestr = datestr(now,'mm-dd-yyyy_HH-MM');
+% write to textfile
+writetable(plout.all_table,fullfile(t.path,sprintf('ERP_pilotdata_LargeLateralClust_%s.csv',t.datestr)),'Delimiter',';')
+
+
+%% extract some data | SSVEP 
+pl.sub2plot = 1:numel(p.files2use);
+
+pl.elec2plot = {{'PO4';'PO8';'O2'}; {'P7';'PO7';'P9';'O1';'I1';'Iz'}};    % left stims one cluster and right stim 2 cluster
+
+pl.elec2plot_i=cellfun(@(y) ...
+    logical(sum(cell2mat(cellfun(@(x) strcmpi({EEG_cue.chanlocs.labels},x), y, 'UniformOutput',false)),1)),...
+    pl.elec2plot(:,1), 'UniformOutput', false);
+
+pl.poslabel = {'left';'right'};
+pl.con_posatt = [1 2 1 2 1 2];
+
+pl.extRDKid= {[1 3 4 6]; [1 3 4 6]; [1 2 4 5]; [1 2 4 5]; [1 4]; [1 4]};
+pl.extRDKposid = {[1 1 2 2];[1 1 2 2];[1 1 2 2];[1 1 2 2];[1 2];[1 2]};
+pl.extRDKcols = {[1 2 1 2]; [1 2 1 2];[1 1 1 1];[1 1 1 1];[1 1];[1 1]};
+
+pl.time2plot = [1 2];
+pl.time2plot_label = {'preCue';'postCue'};
+
+pl.freqrange = [-0.1 0.1];
+
+pl.datastruct = [];
+i_count = 1;
+
+for i_sub = 1:numel(pl.sub2plot)
+    for i_time = 1:numel(pl.time2plot)
+        for i_con = 1:numel(p.con1idx)
+            for i_rdk = 1:numel(pl.extRDKid{i_con})
+                % write out participant
+                pl.datastruct(i_count).participant = p.files{p.files2use(pl.sub2plot(i_sub))};
+                % write out time
+                pl.datastruct(i_count).time = sprintf('[%1.0f %1.0f]ms',p.cue_win2an{pl.time2plot(i_time)}*1000);
+                pl.datastruct(i_count).time_label = pl.time2plot_label{pl.time2plot(i_time)};
+                % write out condition
+                pl.datastruct(i_count).con = p.con1idx(i_con);
+                pl.datastruct(i_count).con_label1 = p.con1label{i_con};
+                pl.datastruct(i_count).con_label2 = p.con2label{cell2mat(cellfun(@(x) any(ismember(x,i_con)), p.con2idx, 'UniformOutput', false))};
+                pl.datastruct(i_count).con_label3 = p.con3label{cell2mat(cellfun(@(x) any(ismember(x,i_con)), p.con3idx, 'UniformOutput', false))};
+                % write RDK infos
+                pl.datastruct(i_count).RDK_id = pl.extRDKid{i_con}(i_rdk);
+                pl.datastruct(i_count).RDK_posid = pl.extRDKposid{i_con}(i_rdk);
+                pl.datastruct(i_count).RDK_poslabel = pl.poslabel{pl.datastruct(i_count).RDK_posid};
+                pl.datastruct(i_count).RDK_freq = behavior.RDK.RDK(pl.datastruct(i_count).RDK_id).freq;
+                % position attended
+                if pl.extRDKposid{pl.datastruct(i_count).con}(i_rdk)==pl.con_posatt(pl.datastruct(i_count).con)
+                    pl.datastruct(i_count).RDK_posatt = 'attended';
+                else
+                    pl.datastruct(i_count).RDK_posatt = 'unattended';
+                end
+                % color attended
+                if pl.extRDKcols{pl.datastruct(i_count).con}(i_rdk)==1
+                    pl.datastruct(i_count).RDK_colatt = 'attended';
+                else
+                    pl.datastruct(i_count).RDK_colatt = 'unattended';
+                end
+                % extract electrodes
+                pl.datastruct(i_count).RDK_elec = vararg2str(pl.elec2plot{pl.datastruct(i_count).RDK_posid});
+                % extract amplitude
+                freqidx = dsearchn(FFT_freqs', (pl.freqrange+pl.datastruct(i_count).RDK_freq)');
+                pl.datastruct(i_count).RDK_amp = squeeze(mean(FFT_data_evo( ...
+                    freqidx(1):freqidx(2), ...
+                    pl.elec2plot_i{pl.datastruct(i_count).RDK_posid}, ...
+                    pl.datastruct(i_count).con, ...
+                    pl.time2plot(i_time), ...
+                    pl.sub2plot(i_sub)), ...
+                    [1 2]));
+                i_count = i_count+1;
+
+            end
+        end
+    end
+end
+
+
+t.path = 'C:\Users\psy05cvd\Dropbox\work\R-statistics\experiments\ssvep_workmem\data_in';
+t.datestr = datestr(now,'mm-dd-yyyy_HH-MM');
+% write to textfile
+writetable(plout.all_table,fullfile(t.path,sprintf('FFT_SSVEP_pilotdata_%s.csv',t.datestr)),'Delimiter',';')
