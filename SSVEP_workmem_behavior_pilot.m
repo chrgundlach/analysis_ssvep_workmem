@@ -12,12 +12,12 @@ p.responsewin_pre =     [0.2 1]; % according to p.targ_respwin from run_posnalph
 
 
 p.con1idx =             [1 2 3 4 5 6];    
-p.con1label =           {'cue_left_3t3d'; 'cue_right_3t3d'; 'cue_left_6t'; 'cue_right_6t'; 'cue_left_3t'; 'cue_right_3t'};
+p.con1label =           {'cue_left_2t2d'; 'cue_right_2t2d'; 'cue_left_4t'; 'cue_right_4t'; 'cue_left_2t'; 'cue_right_2t'};
                         % [RDK1 RDK3; RDK4 RDK6] [RDK1 RDK3; RDK4 RDK6] [RDK1 RDK2; RDK4 RDK5] [RDK1 RDK2; RDK4 RDK5] [RDK1; RDK4] [RDK1; RDK4] 
 p.con2idx =             {[1 3 5];[2 4 6]};
 p.con2label =           {'cue_left';'cue_right'};
 p.con3idx =             {[1 2];[3 4]; [5 6]};
-p.con3label =           {'3t_3d';'6t';'3t'};
+p.con3label =           {'2t_2d';'4t';'2t'};
 
 p.colnum =              [0.4706; 0]; % num of red channel
 p.collabel =            {'orange';'blue'};

@@ -13,12 +13,12 @@ p.chanlocs_path=    ['C:\Users\psy05cvd\Dropbox\work\matlab\Auswertungsskripte\A
 p.resample=         256;
 
 p.con1idx =             [1 2 3 4 5 6];
-p.con1label =           {'cue_left_3t3d'; 'cue_right_3t3d'; 'cue_left_6t'; 'cue_right_6t'; 'cue_left_3t'; 'cue_right_3t'};
+p.con1label =           {'cue_left_2t2d'; 'cue_right_2t2d'; 'cue_left_4t'; 'cue_right_4t'; 'cue_left_2t'; 'cue_right_2t'};
 % [RDK1 RDK3; RDK4 RDK6] [RDK1 RDK3; RDK4 RDK6] [RDK1 RDK2; RDK4 RDK5] [RDK1 RDK2; RDK4 RDK5] [RDK1; RDK4] [RDK1; RDK4]
 p.con2idx =             {[1 3 5];[2 4 6]};
 p.con2label =           {'cue_left';'cue_right'};
 p.con3idx =             {[1 2];[3 4]; [5 6]};
-p.con3label =           {'3t_3d';'6t';'3t'};
+p.con3label =           {'2t_2d';'4t';'2t'};
 p.con_trigger_cue =     [10 20 30 40 50 60];
 p.con_trigger_retent =  [11 21 31 41 51 61];
 
@@ -578,8 +578,10 @@ for i_sub = 1:numel(pl.sub2plot)
     end
 end
 
+pl.datatable = struct2table(pl.datastruct);
+
 
 t.path = 'C:\Users\psy05cvd\Dropbox\work\R-statistics\experiments\ssvep_workmem\data_in';
 t.datestr = datestr(now,'mm-dd-yyyy_HH-MM');
 % write to textfile
-writetable(plout.all_table,fullfile(t.path,sprintf('FFT_SSVEP_pilotdata_%s.csv',t.datestr)),'Delimiter',';')
+writetable(pl.datatable,fullfile(t.path,sprintf('FFT_SSVEP_pilotdata_%s.csv',t.datestr)),'Delimiter',';')
