@@ -94,6 +94,7 @@ for i_sub = 1:numel(p.files2use)
         for i_con = 1:numel(p.con_trigger_cue)
             % evoked
             EEGt_m.data = detrend(mean(EEGt.data(:,:,t.trialindex{i_con}),3)')';
+%             EEGt_m.data = mean(EEGt.data(:,:,t.trialindex{i_con}),3);
             FFT_data_evo(:,:,i_con,i_win,i_sub) = squeeze(abs(fft(EEGt_m.data,p.FFT_freqres,2))*2/size(EEGt.data,2))';
         end
     end
@@ -134,9 +135,9 @@ pl.elec2plot = {'Iz';'I2'};
 pl.elec2plot = {'P7';'PO7';'O1';'Oz';'O2';'PO8';'P8';'P9';'I1';'Iz';'I2';'P10'};
 pl.elec2plot = {'O1';'Oz';'O2';'I1';'Iz';'I2'};
 
-pl.elec2plot = {'P7';'PO7';'Iz';'I2'};         % right stims two cluster
+% pl.elec2plot = {'P7';'PO7';'Iz';'I2'};         % right stims two cluster
 % pl.elec2plot = {'O2';'PO8';'PO4';'I2'};         % left one cluster
-pl.elec2plot = {'PO4';'PO8';'O2'};         % left stims one cluster !
+% pl.elec2plot = {'PO4';'PO8';'O2'};         % left stims one cluster !
 % pl.elec2plot = {'P7';'PO7'};         % right stims two cluster
 % pl.elec2plot = {'P7';'PO7';'P9';'O1';'I1';'Iz'};         % right stims two cluster  !
 
@@ -161,7 +162,7 @@ plot(FFT_freqs,mean(pl.data,2),'Color','k','LineWidth',2)
 
 xlim([0 50])
 xlabel('frequency in Hz')
-ylabel('amplitude in \muV')
+ylabel('amplitude in \muV/cm²')
 title(sprintf('Grand Mean evoked spectrum | t = [%1.0f %1.0f]ms | N = %1.0f', ...
     minmax([p.cue_win2an{pl.time2plot}]*1000), numel(pl.sub2plot)),'Interpreter','none')
 vline(pl.freq2plot([1, 2, 4, 5]),'k:',{'left','left','right','right'})
